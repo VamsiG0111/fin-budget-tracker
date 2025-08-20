@@ -30,8 +30,15 @@ export function BudgetProgress({ categories }: BudgetProgressProps) {
           Track your spending against your budget limits
         </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-6">
-        {categories.map((category) => {
+      <CardContent className="p-4 lg:p-6 space-y-4 lg:space-y-6">
+        {categories.every(cat => cat.budget === 0) ? (
+          <div className="text-center py-8 text-muted-foreground">
+            <span className="text-4xl mb-2 block">🎯</span>
+            <p>No budgets set yet</p>
+            <p className="text-sm">Set budget limits for different categories to track your progress</p>
+          </div>
+        ) : (
+          categories.map((category) => {
           const percentage = (category.spent / category.budget) * 100
           const variant = getProgressVariant(percentage)
           
@@ -60,7 +67,8 @@ export function BudgetProgress({ categories }: BudgetProgressProps) {
               />
             </div>
           )
-        })}
+        })
+        )}
       </CardContent>
     </Card>
   )

@@ -3,49 +3,49 @@ import { ExpenseChart } from "@/components/dashboard/ExpenseChart"
 import { BudgetProgress } from "@/components/dashboard/BudgetProgress"
 import { IncomeChart } from "@/components/dashboard/IncomeChart"
 
-// Mock data for demonstration
+// Initial empty data - everything starts at zero
 const mockExpenseData = [
-  { name: 'Food & Dining', value: 1200, color: '#ff6b6b' },
-  { name: 'Rent', value: 2000, color: '#4ecdc4' },
-  { name: 'Transportation', value: 400, color: '#45b7d1' },
-  { name: 'Entertainment', value: 300, color: '#96ceb4' },
-  { name: 'Shopping', value: 600, color: '#ffeaa7' },
-  { name: 'Utilities', value: 250, color: '#dda0dd' },
+  { name: 'Food & Dining', value: 0, color: '#ff6b6b' },
+  { name: 'Rent', value: 0, color: '#4ecdc4' },
+  { name: 'Transportation', value: 0, color: '#45b7d1' },
+  { name: 'Entertainment', value: 0, color: '#96ceb4' },
+  { name: 'Shopping', value: 0, color: '#ffeaa7' },
+  { name: 'Utilities', value: 0, color: '#dda0dd' },
 ]
 
 const mockBudgetData = [
-  { name: 'Food & Dining', spent: 1200, budget: 1500, icon: '🍽️' },
-  { name: 'Rent', spent: 2000, budget: 2000, icon: '🏠' },
-  { name: 'Transportation', spent: 400, budget: 500, icon: '🚗' },
-  { name: 'Entertainment', spent: 300, budget: 400, icon: '🎬' },
-  { name: 'Shopping', spent: 600, budget: 800, icon: '🛍️' },
-  { name: 'Utilities', spent: 250, budget: 300, icon: '⚡' },
+  { name: 'Food & Dining', spent: 0, budget: 0, icon: '🍽️' },
+  { name: 'Rent', spent: 0, budget: 0, icon: '🏠' },
+  { name: 'Transportation', spent: 0, budget: 0, icon: '🚗' },
+  { name: 'Entertainment', spent: 0, budget: 0, icon: '🎬' },
+  { name: 'Shopping', spent: 0, budget: 0, icon: '🛍️' },
+  { name: 'Utilities', spent: 0, budget: 0, icon: '⚡' },
 ]
 
 const mockIncomeData = [
-  { month: 'Jan', income: 5000, expenses: 4200 },
-  { month: 'Feb', income: 5200, expenses: 4100 },
-  { month: 'Mar', income: 5100, expenses: 4300 },
-  { month: 'Apr', income: 5300, expenses: 4000 },
-  { month: 'May', income: 5400, expenses: 4200 },
-  { month: 'Jun', income: 5600, expenses: 4750 },
+  { month: 'Jan', income: 0, expenses: 0 },
+  { month: 'Feb', income: 0, expenses: 0 },
+  { month: 'Mar', income: 0, expenses: 0 },
+  { month: 'Apr', income: 0, expenses: 0 },
+  { month: 'May', income: 0, expenses: 0 },
+  { month: 'Jun', income: 0, expenses: 0 },
 ]
 
 const Index = () => {
-  const totalIncome = 5600
-  const totalExpenses = 4750
-  const savings = totalIncome - totalExpenses
+  const totalIncome = 0
+  const totalExpenses = 0
+  const savings = 0
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="container mx-auto p-6 space-y-8">
+      <div className="container mx-auto p-4 lg:p-6 space-y-6 lg:space-y-8">
         <DashboardHeader 
           totalIncome={totalIncome}
           totalExpenses={totalExpenses}
           savings={savings}
         />
         
-        <div className="grid gap-6 md:grid-cols-2">
+        <div className="grid gap-4 lg:gap-6 lg:grid-cols-2">
           <ExpenseChart data={mockExpenseData} />
           <BudgetProgress categories={mockBudgetData} />
         </div>

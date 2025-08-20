@@ -38,8 +38,17 @@ export function ExpenseChart({ data }: ExpenseChartProps) {
           Your spending by category this month
         </CardDescription>
       </CardHeader>
-      <CardContent>
-        <div className="h-[300px] w-full">
+      <CardContent className="p-4 lg:p-6">
+        <div className="h-[250px] lg:h-[300px] w-full">
+          {data.every(item => item.value === 0) ? (
+            <div className="h-full flex items-center justify-center text-muted-foreground">
+              <div className="text-center">
+                <span className="text-4xl mb-2 block">📊</span>
+                <p>No expenses recorded yet</p>
+                <p className="text-sm">Start adding transactions to see your expense breakdown</p>
+              </div>
+            </div>
+          ) : (
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie
@@ -59,6 +68,7 @@ export function ExpenseChart({ data }: ExpenseChartProps) {
               <Legend />
             </PieChart>
           </ResponsiveContainer>
+          )}
         </div>
       </CardContent>
     </Card>

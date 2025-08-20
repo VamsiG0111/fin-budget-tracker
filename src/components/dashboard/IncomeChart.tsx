@@ -39,8 +39,17 @@ export function IncomeChart({ data }: IncomeChartProps) {
           Track your financial trends over the past 6 months
         </CardDescription>
       </CardHeader>
-      <CardContent>
-        <div className="h-[300px] w-full">
+      <CardContent className="p-4 lg:p-6">
+        <div className="h-[250px] lg:h-[300px] w-full">
+          {data.every(item => item.income === 0 && item.expenses === 0) ? (
+            <div className="h-full flex items-center justify-center text-muted-foreground">
+              <div className="text-center">
+                <span className="text-4xl mb-2 block">📈</span>
+                <p>No financial data yet</p>
+                <p className="text-sm">Start tracking income and expenses to see trends</p>
+              </div>
+            </div>
+          ) : (
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={data}>
               <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
@@ -75,6 +84,7 @@ export function IncomeChart({ data }: IncomeChartProps) {
               />
             </LineChart>
           </ResponsiveContainer>
+          )}
         </div>
       </CardContent>
     </Card>
