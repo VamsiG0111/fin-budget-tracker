@@ -23,6 +23,7 @@ interface Transaction {
   description: string;
   date: string;
   category: {
+    id: string;
     name: string;
     icon: string;
     color: string;

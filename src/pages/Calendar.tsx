@@ -17,6 +17,7 @@ interface Transaction {
   description: string;
   date: string;
   category: {
+    id: string;
     name: string;
     icon: string;
     color: string;
@@ -62,6 +63,7 @@ export default function Calendar() {
 
       const formattedTransactions = data.map(transaction => ({
         ...transaction,
+        type: transaction.type as 'income' | 'expense',
         category: transaction.categories,
       }));
 

@@ -74,11 +74,11 @@ export function AppSidebar() {
       collapsible="icon"
     >
       <SidebarHeader className="p-4">
-        <div className={`flex items-center gap-3 ${collapsed ? "justify-center" : ""}`}>
+        <div className={`flex items-center gap-3 ${state === "collapsed" ? "justify-center" : ""}`}>
           <div className="p-2 bg-primary/10 rounded-lg">
             <DollarSign className="w-6 h-6 text-primary" />
           </div>
-          {!collapsed && (
+          {state !== "collapsed" && (
             <div className="animate-fade-in">
               <h2 className="font-bold text-lg">Budget Tracker</h2>
               <p className="text-xs text-muted-foreground">Manage your finances</p>
@@ -88,8 +88,8 @@ export function AppSidebar() {
       </SidebarHeader>
 
       <SidebarContent className="px-2">
-        <SidebarGroup open={isExpanded}>
-          <SidebarGroupLabel className={collapsed ? "sr-only" : ""}>
+        <SidebarGroup>
+          <SidebarGroupLabel className={state === "collapsed" ? "sr-only" : ""}>
             Navigation
           </SidebarGroupLabel>
           <SidebarGroupContent>
@@ -103,7 +103,7 @@ export function AppSidebar() {
                       className={`${getNavClassName(item.url)} group transition-all duration-200 hover:scale-[1.02]`}
                     >
                       <item.icon className="mr-2 h-4 w-4 group-hover:scale-110 transition-transform" />
-                      {!collapsed && <span className="animate-fade-in">{item.title}</span>}
+                      {state !== "collapsed" && <span className="animate-fade-in">{item.title}</span>}
                     </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -123,7 +123,7 @@ export function AppSidebar() {
                       className={`${getNavClassName(item.url)} group transition-all duration-200 hover:scale-[1.02]`}
                     >
                       <item.icon className="mr-2 h-4 w-4 group-hover:scale-110 transition-transform" />
-                      {!collapsed && <span className="animate-fade-in">{item.title}</span>}
+                      {state !== "collapsed" && <span className="animate-fade-in">{item.title}</span>}
                     </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -134,7 +134,7 @@ export function AppSidebar() {
       </SidebarContent>
 
       <SidebarFooter className="p-4 border-t">
-        {!collapsed && (
+        {state !== "collapsed" && (
           <div className="flex items-center gap-3 mb-3 animate-fade-in">
             <Avatar className="w-8 h-8">
               <AvatarImage src="" />
@@ -158,11 +158,11 @@ export function AppSidebar() {
           size="sm" 
           onClick={handleLogout}
           className={`${
-            collapsed ? "w-8 h-8 p-0" : "w-full"
+            state === "collapsed" ? "w-8 h-8 p-0" : "w-full"
           } hover:bg-destructive/10 hover:text-destructive transition-all duration-200 hover:scale-[1.02]`}
         >
           <LogOut className="h-4 w-4" />
-          {!collapsed && <span className="ml-2">Logout</span>}
+          {state !== "collapsed" && <span className="ml-2">Logout</span>}
         </Button>
       </SidebarFooter>
     </Sidebar>
