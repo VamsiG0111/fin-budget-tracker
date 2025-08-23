@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { User, Settings, LogOut, Moon, Sun } from "lucide-react";
+import { User, Settings, LogOut, Palette } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,12 +11,10 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
-import { useTheme } from "@/hooks/use-theme";
 import { useNavigate } from "react-router-dom";
 
 export function ProfileDropdown() {
   const { user, signOut } = useAuth();
-  const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
 
   const getUserInitials = () => {
@@ -77,15 +75,11 @@ export function ProfileDropdown() {
         </DropdownMenuItem>
         
         <DropdownMenuItem
-          onClick={toggleTheme}
+          onClick={() => navigate('/theme')}
           className="cursor-pointer hover:bg-muted/50 transition-colors"
         >
-          {theme === 'dark' ? (
-            <Sun className="mr-2 h-4 w-4" />
-          ) : (
-            <Moon className="mr-2 h-4 w-4" />
-          )}
-          <span>{theme === 'dark' ? 'Light Mode' : 'Dark Mode'}</span>
+          <Palette className="mr-2 h-4 w-4" />
+          <span>Change Theme</span>
         </DropdownMenuItem>
         
         <DropdownMenuSeparator />

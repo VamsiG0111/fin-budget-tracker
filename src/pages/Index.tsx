@@ -179,8 +179,8 @@ const Index = () => {
       <SidebarProvider>
         <div className="flex min-h-screen w-full bg-gradient-to-br from-background via-muted/20 to-background">
           <AppSidebar />
-          <div className="flex-1 flex flex-col ml-2">
-            <header className="flex h-16 shrink-0 items-center gap-2 border-b glass px-4 sticky top-0 z-40">
+          <div className="flex-1 flex flex-col">
+            <header className="flex h-16 shrink-0 items-center gap-2 border-b glass px-4 sticky top-0 z-50">
               <div className="flex-1">
                 <h1 className="text-2xl font-bold gradient-text-primary">Budget Tracker</h1>
               </div>
@@ -204,8 +204,8 @@ const Index = () => {
     <SidebarProvider>
       <div className="flex min-h-screen w-full bg-gradient-to-br from-background via-muted/20 to-background">
         <AppSidebar />
-        <div className="flex-1 flex flex-col ml-2">
-          <header className="flex h-16 shrink-0 items-center gap-2 border-b glass px-4 sticky top-0 z-40">
+        <div className="flex-1 flex flex-col">
+          <header className="flex h-16 shrink-0 items-center gap-2 border-b glass px-4 sticky top-0 z-50">
             <div className="flex-1">
               <h1 className="text-2xl font-bold gradient-text-primary">Budget Tracker</h1>
             </div>
