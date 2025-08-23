@@ -177,12 +177,13 @@ const Index = () => {
   if (loading) {
     return (
       <SidebarProvider>
-        <div className="flex min-h-screen w-full bg-background">
+        <div className="flex min-h-screen w-full bg-gradient-to-br from-background via-muted/20 to-background">
           <AppSidebar />
           <div className="flex-1 flex flex-col">
-            <header className="flex h-16 shrink-0 items-center gap-2 border-b bg-card/50 backdrop-blur-sm px-4">
-              <SidebarTrigger className="-ml-1" />
-              <div className="flex-1" />
+            <header className="flex h-16 shrink-0 items-center gap-2 border-b glass px-4 sticky top-0 z-50">
+              <div className="flex-1">
+                <h1 className="text-2xl font-bold gradient-text-primary">Budget Tracker</h1>
+              </div>
               <ProfileDropdown />
             </header>
             <main className="flex-1 p-4 lg:p-6">
@@ -201,15 +202,16 @@ const Index = () => {
 
   return (
     <SidebarProvider>
-      <div className="flex min-h-screen w-full bg-background">
+      <div className="flex min-h-screen w-full bg-gradient-to-br from-background via-muted/20 to-background">
         <AppSidebar />
         <div className="flex-1 flex flex-col">
-          <header className="flex h-16 shrink-0 items-center gap-2 border-b bg-card/50 backdrop-blur-sm px-4">
-            <SidebarTrigger className="-ml-1" />
-            <div className="flex-1" />
+          <header className="flex h-16 shrink-0 items-center gap-2 border-b glass px-4 sticky top-0 z-50">
+            <div className="flex-1">
+              <h1 className="text-2xl font-bold gradient-text-primary">Budget Tracker</h1>
+            </div>
             <Button 
               onClick={() => setIsAddDialogOpen(true)}
-              className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg hover:shadow-xl transition-all duration-200"
+              className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
             >
               <Plus className="mr-2 h-4 w-4" />
               Add Transaction

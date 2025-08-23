@@ -45,10 +45,11 @@ const bottomNavItems = [
 ];
 
 export function AppSidebar() {
-  const { state } = useSidebar();
+  const { state, setOpen } = useSidebar();
   const location = useLocation();
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
+  const [isHovered, setIsHovered] = useState(false);
   const currentPath = location.pathname;
 
   const isActive = (path: string) => currentPath === path;
@@ -58,6 +59,21 @@ export function AppSidebar() {
     isActive(path) 
       ? "bg-primary/10 text-primary font-medium border-r-2 border-primary" 
       : "hover:bg-muted/50 transition-colors duration-200";
+
+  // Auto-expand on hover at left edge
+  const handleMouseEnter = () => {
+    if (state === "collapsed") {
+      setIsHovered(true);
+      setOpen(true);
+    }
+  };
+
+  const handleMouseLeave = () => {
+    if (isHovered) {
+      setIsHovered(false);
+      setOpen(false);
+    }
+  };
 
   const handleLogout = async () => {
     await signOut();
@@ -70,8 +86,10 @@ export function AppSidebar() {
 
   return (
     <Sidebar
-      className={`${state === "collapsed" ? "w-16" : "w-64"} transition-all duration-300 border-r bg-card/50 backdrop-blur-sm`}
+      className={`${state === "collapsed" ? "w-16" : "w-64"} transition-all duration-300 border-r glass`}
       collapsible="icon"
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
     >
       <SidebarHeader className="p-4">
         <div className={`flex items-center gap-3 ${state === "collapsed" ? "justify-center" : ""}`}>

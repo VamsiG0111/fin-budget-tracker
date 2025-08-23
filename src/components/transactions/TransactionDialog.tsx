@@ -157,7 +157,7 @@ export function TransactionDialog({
           <div className="space-y-2">
             <Label htmlFor="amount">Amount *</Label>
             <div className="relative">
-              <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground">₹</span>
               <Input
                 id="amount"
                 type="number"
@@ -188,7 +188,7 @@ export function TransactionDialog({
                   )}
                 </SelectValue>
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="z-[100] bg-card border border-border shadow-lg">
                 {categories.map((category) => (
                   <SelectItem key={category.id} value={category.id}>
                     <div className="flex items-center gap-2">

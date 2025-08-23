@@ -2,127 +2,169 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Budget Tracker Design System - Professional Financial Theme */
+/* Modern Colorful Budget Tracker - Vibrant Financial Theme */
 
 @layer base {
   :root {
-    /* Core Colors */
-    --background: 240 10% 98%;
-    --foreground: 240 10% 8%;
+    /* Core Colors - Vibrant Base */
+    --background: 248 100% 99%;
+    --foreground: 225 15% 15%;
 
-    /* Financial Primary Colors */
-    --primary: 210 100% 45%;
+    /* Dynamic Primary Colors - Electric Blue */
+    --primary: 220 100% 55%;
     --primary-foreground: 0 0% 100%;
-    --primary-light: 210 100% 88%;
+    --primary-light: 220 100% 90%;
+    --primary-glow: 220 100% 70%;
     
-    /* Success/Growth Colors */
-    --success: 142 76% 36%;
+    /* Success/Growth Colors - Fresh Green */
+    --success: 155 85% 44%;
     --success-foreground: 0 0% 100%;
-    --success-light: 142 76% 94%;
+    --success-light: 155 85% 92%;
+    --success-glow: 155 85% 65%;
     
-    /* Warning/Alert Colors */
-    --warning: 38 92% 50%;
+    /* Warning/Alert Colors - Golden Orange */
+    --warning: 35 100% 55%;
     --warning-foreground: 0 0% 100%;
-    --warning-light: 38 92% 95%;
+    --warning-light: 35 100% 92%;
+    --warning-glow: 35 100% 70%;
     
-    /* Danger/Expense Colors */
-    --danger: 0 84% 60%;
+    /* Danger/Expense Colors - Coral Red */
+    --danger: 5 85% 62%;
     --danger-foreground: 0 0% 100%;
-    --danger-light: 0 84% 95%;
+    --danger-light: 5 85% 95%;
+    --danger-glow: 5 85% 75%;
 
-    /* Card & Surface Colors */
+    /* Card & Surface Colors - Clean with subtle tints */
     --card: 0 0% 100%;
-    --card-foreground: 240 10% 8%;
-    --card-hover: 240 60% 99%;
+    --card-foreground: 225 15% 15%;
+    --card-hover: 220 60% 98%;
 
-    /* Secondary Colors */
-    --secondary: 240 5% 96%;
-    --secondary-foreground: 240 6% 10%;
+    /* Secondary Colors - Soft Purple */
+    --secondary: 270 60% 95%;
+    --secondary-foreground: 270 15% 25%;
 
-    /* Muted Colors */
-    --muted: 240 5% 96%;
-    --muted-foreground: 240 4% 46%;
+    /* Muted Colors - Neutral with warmth */
+    --muted: 220 20% 95%;
+    --muted-foreground: 220 10% 45%;
 
-    /* Accent Colors */
-    --accent: 240 5% 96%;
-    --accent-foreground: 240 6% 10%;
+    /* Accent Colors - Vibrant Purple */
+    --accent: 270 100% 65%;
+    --accent-foreground: 0 0% 100%;
 
     /* Destructive Colors */
-    --destructive: 0 84% 60%;
+    --destructive: 5 85% 62%;
     --destructive-foreground: 0 0% 100%;
 
-    /* Border & Input */
-    --border: 240 6% 90%;
-    --input: 240 6% 90%;
-    --ring: 210 100% 45%;
+    /* Border & Input - Subtle colored borders */
+    --border: 220 20% 88%;
+    --input: 220 20% 88%;
+    --ring: 220 100% 55%;
 
-    /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(210 100% 45%) 0%, hsl(195 100% 55%) 100%);
-    --gradient-success: linear-gradient(135deg, hsl(142 76% 36%) 0%, hsl(160 84% 45%) 100%);
-    --gradient-chart: linear-gradient(180deg, hsl(210 100% 45% / 0.2) 0%, hsl(210 100% 45% / 0.02) 100%);
+    /* Popover */
+    --popover: 0 0% 100%;
+    --popover-foreground: 225 15% 15%;
+
+    /* Sidebar Colors */
+    --sidebar-background: 225 25% 97%;
+    --sidebar-foreground: 225 15% 25%;
+    --sidebar-primary: 220 100% 55%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 270 60% 95%;
+    --sidebar-accent-foreground: 270 15% 25%;
+    --sidebar-border: 220 20% 90%;
+    --sidebar-ring: 220 100% 55%;
+
+    /* Beautiful Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(220 100% 55%) 0%, hsl(260 100% 65%) 100%);
+    --gradient-success: linear-gradient(135deg, hsl(155 85% 44%) 0%, hsl(180 85% 50%) 100%);
+    --gradient-danger: linear-gradient(135deg, hsl(5 85% 62%) 0%, hsl(340 85% 65%) 100%);
+    --gradient-warning: linear-gradient(135deg, hsl(35 100% 55%) 0%, hsl(50 100% 60%) 100%);
+    --gradient-background: linear-gradient(135deg, hsl(248 100% 99%) 0%, hsl(220 60% 98%) 100%);
+    --gradient-card: linear-gradient(145deg, hsl(0 0% 100%) 0%, hsl(220 60% 99%) 100%);
     
-    /* Shadows */
-    --shadow-card: 0 1px 3px 0 hsl(240 6% 10% / 0.1), 0 1px 2px 0 hsl(240 6% 10% / 0.06);
-    --shadow-card-hover: 0 4px 6px -1px hsl(240 6% 10% / 0.1), 0 2px 4px -1px hsl(240 6% 10% / 0.06);
-    --shadow-chart: 0 10px 15px -3px hsl(210 100% 45% / 0.1), 0 4px 6px -2px hsl(210 100% 45% / 0.05);
+    /* Elegant Shadows with color */
+    --shadow-card: 0 2px 8px 0 hsl(220 100% 55% / 0.08), 0 1px 3px 0 hsl(220 100% 55% / 0.05);
+    --shadow-card-hover: 0 8px 25px -5px hsl(220 100% 55% / 0.15), 0 4px 12px -2px hsl(220 100% 55% / 0.08);
+    --shadow-glow: 0 0 40px hsl(220 100% 70% / 0.3);
+    --shadow-success: 0 4px 20px hsl(155 85% 44% / 0.25);
+    --shadow-danger: 0 4px 20px hsl(5 85% 62% / 0.25);
 
-    /* Animations */
+    /* Smooth Animations */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     --transition-fast: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 
-    --radius: 0.5rem;
+    --radius: 0.75rem;
   }
 
   .dark {
-    /* Core Colors */
-    --background: 240 10% 3.9%;
-    --foreground: 0 0% 98%;
+    /* Core Colors - Rich Dark Base */
+    --background: 225 25% 8%;
+    --foreground: 220 20% 95%;
 
-    /* Financial Primary Colors */
-    --primary: 210 100% 56%;
-    --primary-foreground: 0 0% 9%;
-    --primary-light: 210 100% 15%;
+    /* Dynamic Primary Colors - Bright Electric Blue */
+    --primary: 220 100% 60%;
+    --primary-foreground: 225 25% 8%;
+    --primary-light: 220 100% 20%;
+    --primary-glow: 220 100% 70%;
     
-    /* Success/Growth Colors */
-    --success: 142 76% 45%;
-    --success-foreground: 0 0% 9%;
-    --success-light: 142 76% 8%;
+    /* Success/Growth Colors - Vibrant Green */
+    --success: 155 85% 50%;
+    --success-foreground: 225 25% 8%;
+    --success-light: 155 85% 15%;
+    --success-glow: 155 85% 60%;
     
-    /* Warning/Alert Colors */
-    --warning: 38 92% 60%;
-    --warning-foreground: 0 0% 9%;
-    --warning-light: 38 92% 8%;
+    /* Warning/Alert Colors - Bright Orange */
+    --warning: 35 100% 60%;
+    --warning-foreground: 225 25% 8%;
+    --warning-light: 35 100% 15%;
+    --warning-glow: 35 100% 70%;
     
-    /* Danger/Expense Colors */
-    --danger: 0 84% 60%;
-    --danger-foreground: 0 0% 98%;
-    --danger-light: 0 84% 8%;
+    /* Danger/Expense Colors - Vibrant Coral */
+    --danger: 5 85% 65%;
+    --danger-foreground: 225 25% 8%;
+    --danger-light: 5 85% 12%;
+    --danger-glow: 5 85% 75%;
 
-    /* Card & Surface Colors */
-    --card: 240 10% 3.9%;
-    --card-foreground: 0 0% 98%;
-    --card-hover: 240 10% 7%;
+    /* Card & Surface Colors - Rich dark with subtle tints */
+    --card: 225 25% 10%;
+    --card-foreground: 220 20% 95%;
+    --card-hover: 225 25% 12%;
 
-    /* Secondary Colors */
-    --secondary: 240 3.7% 15.9%;
-    --secondary-foreground: 0 0% 98%;
+    /* Secondary Colors - Deep Purple */
+    --secondary: 270 25% 15%;
+    --secondary-foreground: 270 20% 85%;
 
-    /* Muted Colors */
-    --muted: 240 3.7% 15.9%;
-    --muted-foreground: 240 5% 64.9%;
+    /* Muted Colors - Dark neutral */
+    --muted: 225 20% 15%;
+    --muted-foreground: 225 10% 60%;
 
-    /* Accent Colors */
-    --accent: 240 3.7% 15.9%;
-    --accent-foreground: 0 0% 98%;
+    /* Accent Colors - Bright Purple */
+    --accent: 270 100% 70%;
+    --accent-foreground: 225 25% 8%;
 
     /* Destructive Colors */
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
+    --destructive: 5 85% 65%;
+    --destructive-foreground: 220 20% 95%;
 
-    /* Border & Input */
-    --border: 240 3.7% 15.9%;
-    --input: 240 3.7% 15.9%;
-    --ring: 210 100% 56%;
+    /* Border & Input - Colored dark borders */
+    --border: 225 20% 18%;
+    --input: 225 20% 18%;
+    --ring: 220 100% 60%;
+
+    /* Popover */
+    --popover: 225 25% 10%;
+    --popover-foreground: 220 20% 95%;
+
+    /* Sidebar Colors */
+    --sidebar-background: 225 25% 9%;
+    --sidebar-foreground: 220 20% 90%;
+    --sidebar-primary: 220 100% 60%;
+    --sidebar-primary-foreground: 225 25% 8%;
+    --sidebar-accent: 270 25% 15%;
+    --sidebar-accent-foreground: 270 20% 85%;
+    --sidebar-border: 225 20% 18%;
+    --sidebar-ring: 220 100% 60%;
   }
 }
 
@@ -133,5 +175,66 @@
 
   body {
     @apply bg-background text-foreground;
+    background: linear-gradient(135deg, hsl(var(--background)) 0%, hsl(var(--muted)) 100%);
+    min-height: 100vh;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-muted;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-primary/30 rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-primary/50;
+  }
+}
+
+@layer components {
+  /* Glass effect utilities */
+  .glass {
+    backdrop-filter: blur(10px);
+    background: hsl(var(--card) / 0.8);
+    border: 1px solid hsl(var(--border) / 0.5);
+  }
+
+  .glass-hover:hover {
+    backdrop-filter: blur(15px);
+    background: hsl(var(--card-hover) / 0.9);
+  }
+
+  /* Gradient text utilities */
+  .gradient-text-primary {
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .gradient-text-success {
+    background: var(--gradient-success);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  /* Glow effects */
+  .glow-primary {
+    box-shadow: var(--shadow-glow);
+  }
+
+  .glow-success {
+    box-shadow: var(--shadow-success);
+  }
+
+  .glow-danger {
+    box-shadow: var(--shadow-danger);
   }
 }
