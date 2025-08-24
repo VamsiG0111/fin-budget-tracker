@@ -49,33 +49,48 @@ export function AppSidebar() {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
-  const [isHovered, setIsHovered] = useState(false);
+  const [isHoverArea, setIsHoverArea] = useState(false);
   const currentPath = location.pathname;
 
   const isActive = (path: string) => currentPath === path;
-  const isExpanded = mainNavItems.some((item) => isActive(item.url));
 
   const getNavClassName = (path: string) =>
     isActive(path) 
       ? "bg-primary/10 text-primary font-medium border-r-2 border-primary" 
       : "hover:bg-muted/50 transition-colors duration-200";
 
-  // Force collapsed state by default
+  // Set initial collapsed state
   useEffect(() => {
-    setOpen(false);
-  }, [setOpen]);
+    if (state === "expanded") {
+      setOpen(false);
+    }
+  }, []);
 
-  // Auto-expand on hover at left edge
-  const handleMouseEnter = () => {
-    setIsHovered(true);
+  // Improved hover handlers with proper state management
+  const handleTriggerEnter = () => {
+    setIsHoverArea(true);
     setOpen(true);
   };
 
-  const handleMouseLeave = () => {
-    if (isHovered) {
-      setIsHovered(false);
+  const handleTriggerLeave = () => {
+    // Use a small delay to prevent flickering
+    setTimeout(() => {
+      if (!isHoverArea) {
+        setIsHoverArea(false);
+        setOpen(false);
+      }
+    }, 150);
+  };
+
+  const handleSidebarEnter = () => {
+    setIsHoverArea(true);
+  };
+
+  const handleSidebarLeave = () => {
+    setIsHoverArea(false);
+    setTimeout(() => {
       setOpen(false);
-    }
+    }, 150);
   };
 
   const handleLogout = async () => {
@@ -89,17 +104,20 @@ export function AppSidebar() {
 
   return (
     <>
-      {/* Hover trigger area at leftmost edge */}
-      <div 
-        className="fixed left-0 top-0 w-4 h-full z-40 bg-transparent"
-        onMouseEnter={handleMouseEnter}
-      />
+      {/* Hover trigger area at leftmost edge - only when collapsed */}
+      {state === "collapsed" && (
+        <div 
+          className="fixed left-0 top-0 w-8 h-full z-40 bg-transparent"
+          onMouseEnter={handleTriggerEnter}
+          onMouseLeave={handleTriggerLeave}
+        />
+      )}
       
       <Sidebar
         className={`${state === "collapsed" ? "w-16" : "w-64"} transition-all duration-300 border-r glass`}
         collapsible="icon"
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
+        onMouseEnter={handleSidebarEnter}
+        onMouseLeave={handleSidebarLeave}
       >
       <SidebarHeader className="p-4">
         <div className={`flex items-center gap-3 ${state === "collapsed" ? "justify-center" : ""}`}>
