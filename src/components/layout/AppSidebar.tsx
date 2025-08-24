@@ -49,7 +49,6 @@ export function AppSidebar() {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
-  const [isHoverArea, setIsHoverArea] = useState(false);
   const currentPath = location.pathname;
 
   const isActive = (path: string) => currentPath === path;
@@ -66,31 +65,13 @@ export function AppSidebar() {
     }
   }, []);
 
-  // Improved hover handlers with proper state management
+  // Simple hover handlers - no conflicting timeouts
   const handleTriggerEnter = () => {
-    setIsHoverArea(true);
     setOpen(true);
   };
 
-  const handleTriggerLeave = () => {
-    // Use a small delay to prevent flickering
-    setTimeout(() => {
-      if (!isHoverArea) {
-        setIsHoverArea(false);
-        setOpen(false);
-      }
-    }, 150);
-  };
-
-  const handleSidebarEnter = () => {
-    setIsHoverArea(true);
-  };
-
   const handleSidebarLeave = () => {
-    setIsHoverArea(false);
-    setTimeout(() => {
-      setOpen(false);
-    }, 150);
+    setOpen(false);
   };
 
   const handleLogout = async () => {
@@ -107,16 +88,14 @@ export function AppSidebar() {
       {/* Hover trigger area at leftmost edge - only when collapsed */}
       {state === "collapsed" && (
         <div 
-          className="fixed left-0 top-0 w-8 h-full z-40 bg-transparent"
+          className="fixed left-0 top-0 w-8 h-full z-40"
           onMouseEnter={handleTriggerEnter}
-          onMouseLeave={handleTriggerLeave}
         />
       )}
       
       <Sidebar
         className={`${state === "collapsed" ? "w-16" : "w-64"} transition-all duration-300 border-r glass`}
         collapsible="icon"
-        onMouseEnter={handleSidebarEnter}
         onMouseLeave={handleSidebarLeave}
       >
       <SidebarHeader className="p-4">
