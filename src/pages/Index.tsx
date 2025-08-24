@@ -1,8 +1,5 @@
 import { useState, useEffect } from 'react';
 import { Plus } from 'lucide-react';
-import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
-import { AppSidebar } from '@/components/layout/AppSidebar';
-import { ProfileDropdown } from '@/components/profile/ProfileDropdown';
 import { DashboardHeader } from '@/components/dashboard/DashboardHeader';
 import { ExpenseChart } from '@/components/dashboard/ExpenseChart';
 import { BudgetProgress } from '@/components/dashboard/BudgetProgress';
@@ -176,74 +173,49 @@ const Index = () => {
 
   if (loading) {
     return (
-      <SidebarProvider>
-        <div className="flex min-h-screen w-full bg-gradient-to-br from-background via-muted/20 to-background">
-          <AppSidebar />
-          <div className="flex-1 flex flex-col">
-            <header className="flex h-16 shrink-0 items-center gap-2 border-b glass px-4 sticky top-0 z-50">
-              <div className="flex-1">
-                <h1 className="text-2xl font-bold gradient-text-primary">Budget Tracker</h1>
-              </div>
-              <ProfileDropdown />
-            </header>
-            <main className="flex-1 p-4 lg:p-6">
-              <div className="flex items-center justify-center min-h-[400px]">
-                <div className="text-center">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-                  <p className="text-muted-foreground">Loading your dashboard...</p>
-                </div>
-              </div>
-            </main>
-          </div>
+      <div className="flex items-center justify-center min-h-[400px] p-4">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading your dashboard...</p>
         </div>
-      </SidebarProvider>
+      </div>
     );
   }
 
   return (
-    <SidebarProvider>
-      <div className="flex min-h-screen w-full bg-gradient-to-br from-background via-muted/20 to-background">
-        <AppSidebar />
-        <div className="flex-1 flex flex-col">
-          <header className="flex h-16 shrink-0 items-center gap-2 border-b glass px-4 sticky top-0 z-50">
-            <div className="flex-1">
-              <h1 className="text-2xl font-bold gradient-text-primary">Budget Tracker</h1>
-            </div>
-            <Button 
-              onClick={() => setIsAddDialogOpen(true)}
-              className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
-            >
-              <Plus className="mr-2 h-4 w-4" />
-              Add Transaction
-            </Button>
-            <ProfileDropdown />
-          </header>
+    <div className="p-4 lg:p-6 space-y-6">
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex-1" />
+        <Button 
+          onClick={() => setIsAddDialogOpen(true)}
+          className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+        >
+          <Plus className="mr-2 h-4 w-4" />
+          Add Transaction
+        </Button>
+      </div>
 
-          <main className="flex-1 p-4 lg:p-6 space-y-6">
-            <DashboardHeader 
-              totalIncome={totalIncome}
-              totalExpenses={totalExpenses}
-              savings={savings}
-            />
-            
-            <div className="grid gap-6 lg:grid-cols-3">
-              <div className="lg:col-span-2 space-y-6">
-                <div className="grid gap-6 lg:grid-cols-2">
-                  <ExpenseChart data={expensesByCategory} />
-                  <BudgetProgress categories={budgetData} />
-                </div>
-                <IncomeChart data={monthlyData} />
-              </div>
-              
-              <div className="space-y-6">
-                <RecentTransactions 
-                  transactions={transactions.slice(0, 8)} 
-                  categories={categories}
-                  onRefresh={loadData}
-                />
-              </div>
-            </div>
-          </main>
+      <DashboardHeader 
+        totalIncome={totalIncome}
+        totalExpenses={totalExpenses}
+        savings={savings}
+      />
+      
+      <div className="grid gap-6 lg:grid-cols-3">
+        <div className="lg:col-span-2 space-y-6">
+          <div className="grid gap-6 lg:grid-cols-2">
+            <ExpenseChart data={expensesByCategory} />
+            <BudgetProgress categories={budgetData} />
+          </div>
+          <IncomeChart data={monthlyData} />
+        </div>
+        
+        <div className="space-y-6">
+          <RecentTransactions 
+            transactions={transactions.slice(0, 8)} 
+            categories={categories}
+            onRefresh={loadData}
+          />
         </div>
       </div>
 
@@ -253,7 +225,7 @@ const Index = () => {
         onSuccess={handleTransactionAdded}
         categories={categories}
       />
-    </SidebarProvider>
+    </div>
   );
 };
 

@@ -7,10 +7,9 @@ import {
   DollarSign,
   LayoutDashboard,
   LogOut,
-  PieChart,
+  Menu,
   Settings,
   Tag,
-  TrendingUp,
   User
 } from "lucide-react";
 
@@ -58,20 +57,8 @@ export function AppSidebar() {
       ? "bg-primary/10 text-primary font-medium border-r-2 border-primary" 
       : "hover:bg-muted/50 transition-colors duration-200";
 
-  // Set initial collapsed state
-  useEffect(() => {
-    if (state === "expanded") {
-      setOpen(false);
-    }
-  }, []);
-
-  // Simple hover handlers - no conflicting timeouts
-  const handleTriggerEnter = () => {
-    setOpen(true);
-  };
-
-  const handleSidebarLeave = () => {
-    setOpen(false);
+  const toggleSidebar = () => {
+    setOpen(!state || state === "collapsed");
   };
 
   const handleLogout = async () => {
@@ -85,112 +72,113 @@ export function AppSidebar() {
 
   return (
     <>
-      {/* Hover trigger area at leftmost edge - only when collapsed */}
-      {state === "collapsed" && (
-        <div 
-          className="fixed left-0 top-0 w-8 h-full z-40"
-          onMouseEnter={handleTriggerEnter}
-        />
-      )}
+      {/* Menu button - always visible */}
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={toggleSidebar}
+        className="fixed top-4 left-4 z-50 bg-card/80 backdrop-blur-sm border shadow-md hover:bg-card"
+      >
+        <Menu className="h-4 w-4" />
+      </Button>
       
       <Sidebar
-        className={`${state === "collapsed" ? "w-16" : "w-64"} transition-all duration-300 border-r glass`}
+        className={`${state === "collapsed" ? "w-16" : "w-64"} transition-all duration-300 border-r glass ml-0`}
         collapsible="icon"
-        onMouseLeave={handleSidebarLeave}
       >
-      <SidebarHeader className="p-4">
-        <div className={`flex items-center gap-3 ${state === "collapsed" ? "justify-center" : ""}`}>
-          <div className="p-2 bg-primary/10 rounded-lg">
-            <DollarSign className="w-6 h-6 text-primary" />
+        <SidebarHeader className="p-4">
+          <div className={`flex items-center gap-3 ${state === "collapsed" ? "justify-center" : ""}`}>
+            <div className="p-2 bg-primary/10 rounded-lg">
+              <DollarSign className="w-6 h-6 text-primary" />
+            </div>
+            {state !== "collapsed" && (
+              <div className="animate-fade-in">
+                <h2 className="font-bold text-lg">Budget Tracker</h2>
+                <p className="text-xs text-muted-foreground">Manage your finances</p>
+              </div>
+            )}
           </div>
+        </SidebarHeader>
+
+        <SidebarContent className="px-2">
+          <SidebarGroup>
+            <SidebarGroupLabel className={state === "collapsed" ? "sr-only" : ""}>
+              Navigation
+            </SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {mainNavItems.map((item) => (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton asChild>
+                      <NavLink 
+                        to={item.url} 
+                        end 
+                        className={`${getNavClassName(item.url)} group transition-all duration-200 hover:scale-[1.02]`}
+                      >
+                        <item.icon className="mr-2 h-4 w-4 group-hover:scale-110 transition-transform" />
+                        {state !== "collapsed" && <span className="animate-fade-in">{item.title}</span>}
+                      </NavLink>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+
+          <SidebarGroup className="mt-auto">
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {bottomNavItems.map((item) => (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton asChild>
+                      <NavLink 
+                        to={item.url} 
+                        className={`${getNavClassName(item.url)} group transition-all duration-200 hover:scale-[1.02]`}
+                      >
+                        <item.icon className="mr-2 h-4 w-4 group-hover:scale-110 transition-transform" />
+                        {state !== "collapsed" && <span className="animate-fade-in">{item.title}</span>}
+                      </NavLink>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        </SidebarContent>
+
+        <SidebarFooter className="p-4 border-t">
           {state !== "collapsed" && (
-            <div className="animate-fade-in">
-              <h2 className="font-bold text-lg">Budget Tracker</h2>
-              <p className="text-xs text-muted-foreground">Manage your finances</p>
+            <div className="flex items-center gap-3 mb-3 animate-fade-in">
+              <Avatar className="w-8 h-8">
+                <AvatarImage src="" />
+                <AvatarFallback className="bg-primary/10 text-primary text-xs">
+                  {getUserInitials()}
+                </AvatarFallback>
+              </Avatar>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium truncate">
+                  {user?.email?.split('@')[0] || 'User'}
+                </p>
+                <p className="text-xs text-muted-foreground truncate">
+                  {user?.email || 'user@example.com'}
+                </p>
+              </div>
             </div>
           )}
-        </div>
-      </SidebarHeader>
-
-      <SidebarContent className="px-2">
-        <SidebarGroup>
-          <SidebarGroupLabel className={state === "collapsed" ? "sr-only" : ""}>
-            Navigation
-          </SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {mainNavItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <NavLink 
-                      to={item.url} 
-                      end 
-                      className={`${getNavClassName(item.url)} group transition-all duration-200 hover:scale-[1.02]`}
-                    >
-                      <item.icon className="mr-2 h-4 w-4 group-hover:scale-110 transition-transform" />
-                      {state !== "collapsed" && <span className="animate-fade-in">{item.title}</span>}
-                    </NavLink>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-
-        <SidebarGroup className="mt-auto">
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {bottomNavItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <NavLink 
-                      to={item.url} 
-                      className={`${getNavClassName(item.url)} group transition-all duration-200 hover:scale-[1.02]`}
-                    >
-                      <item.icon className="mr-2 h-4 w-4 group-hover:scale-110 transition-transform" />
-                      {state !== "collapsed" && <span className="animate-fade-in">{item.title}</span>}
-                    </NavLink>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-      </SidebarContent>
-
-      <SidebarFooter className="p-4 border-t">
-        {state !== "collapsed" && (
-          <div className="flex items-center gap-3 mb-3 animate-fade-in">
-            <Avatar className="w-8 h-8">
-              <AvatarImage src="" />
-              <AvatarFallback className="bg-primary/10 text-primary text-xs">
-                {getUserInitials()}
-              </AvatarFallback>
-            </Avatar>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium truncate">
-                {user?.email?.split('@')[0] || 'User'}
-              </p>
-              <p className="text-xs text-muted-foreground truncate">
-                {user?.email || 'user@example.com'}
-              </p>
-            </div>
-          </div>
-        )}
-        
-        <Button 
-          variant="ghost" 
-          size="sm" 
-          onClick={handleLogout}
-          className={`${
-            state === "collapsed" ? "w-8 h-8 p-0" : "w-full"
-          } hover:bg-destructive/10 hover:text-destructive transition-all duration-200 hover:scale-[1.02]`}
-        >
-          <LogOut className="h-4 w-4" />
-          {state !== "collapsed" && <span className="ml-2">Logout</span>}
-        </Button>
-      </SidebarFooter>
-    </Sidebar>
+          
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            onClick={handleLogout}
+            className={`${
+              state === "collapsed" ? "w-8 h-8 p-0" : "w-full"
+            } hover:bg-destructive/10 hover:text-destructive transition-all duration-200 hover:scale-[1.02]`}
+          >
+            <LogOut className="h-4 w-4" />
+            {state !== "collapsed" && <span className="ml-2">Logout</span>}
+          </Button>
+        </SidebarFooter>
+      </Sidebar>
     </>
   );
 }
