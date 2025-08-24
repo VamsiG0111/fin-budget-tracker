@@ -60,12 +60,15 @@ export function AppSidebar() {
       ? "bg-primary/10 text-primary font-medium border-r-2 border-primary" 
       : "hover:bg-muted/50 transition-colors duration-200";
 
+  // Force collapsed state by default
+  useEffect(() => {
+    setOpen(false);
+  }, [setOpen]);
+
   // Auto-expand on hover at left edge
   const handleMouseEnter = () => {
-    if (state === "collapsed") {
-      setIsHovered(true);
-      setOpen(true);
-    }
+    setIsHovered(true);
+    setOpen(true);
   };
 
   const handleMouseLeave = () => {
@@ -85,12 +88,19 @@ export function AppSidebar() {
   };
 
   return (
-    <Sidebar
-      className={`${state === "collapsed" ? "w-16" : "w-64"} transition-all duration-300 border-r glass`}
-      collapsible="icon"
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-    >
+    <>
+      {/* Hover trigger area at leftmost edge */}
+      <div 
+        className="fixed left-0 top-0 w-4 h-full z-40 bg-transparent"
+        onMouseEnter={handleMouseEnter}
+      />
+      
+      <Sidebar
+        className={`${state === "collapsed" ? "w-16" : "w-64"} transition-all duration-300 border-r glass`}
+        collapsible="icon"
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+      >
       <SidebarHeader className="p-4">
         <div className={`flex items-center gap-3 ${state === "collapsed" ? "justify-center" : ""}`}>
           <div className="p-2 bg-primary/10 rounded-lg">
@@ -184,5 +194,6 @@ export function AppSidebar() {
         </Button>
       </SidebarFooter>
     </Sidebar>
+    </>
   );
 }
