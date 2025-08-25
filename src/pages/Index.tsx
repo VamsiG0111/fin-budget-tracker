@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/use-auth';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { BudgetDialog } from '@/components/budget/BudgetDialog';
 
 interface Transaction {
   id: string;
@@ -39,6 +40,7 @@ const Index = () => {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [isBudgetDialogOpen, setIsBudgetDialogOpen] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -100,7 +102,7 @@ const Index = () => {
 
   const handleTransactionAdded = () => {
     setIsAddDialogOpen(false);
-    loadData();
+    loadData(); // This will reload everything including budget data
     toast({
       title: "Success",
       description: "Transaction added successfully!",
@@ -157,19 +159,53 @@ const Index = () => {
     });
   });
 
-  // Mock budget data for now (can be enhanced later)
-  const budgetData = categories.map(category => {
-    const spent = transactions
-      .filter(t => t.type === 'expense' && t.category.id === category.id)
-      .reduce((sum, t) => sum + Number(t.amount), 0);
-    
-    return {
-      name: category.name,
-      spent,
-      budget: spent * 1.2, // Mock budget as 120% of spent for demonstration
-      icon: category.icon,
-    };
-  }).filter(item => item.spent > 0);
+  // Load real budget data
+  const [budgetData, setBudgetData] = useState<Array<{name: string; spent: number; budget: number; icon: string;}>>([]);
+
+  const loadBudgetData = async () => {
+    if (!user) return;
+
+    try {
+      const currentMonth = new Date().getMonth() + 1;
+      const currentYear = new Date().getFullYear();
+
+      const { data: budgets, error } = await supabase
+        .from('budgets')
+        .select('*')
+        .eq('user_id', user.id)
+        .eq('month', currentMonth)
+        .eq('year', currentYear);
+
+      if (error) throw error;
+
+      const budgetMap = new Map(budgets.map(b => [b.category_id, b.amount]));
+
+      const budgetProgress = categories.map(category => {
+        const spent = transactions
+          .filter(t => t.type === 'expense' && t.category.id === category.id)
+          .reduce((sum, t) => sum + Number(t.amount), 0);
+        
+        const budget = budgetMap.get(category.id) || 0;
+        
+        return {
+          name: category.name,
+          spent,
+          budget,
+          icon: category.icon,
+        };
+      }).filter(item => item.budget > 0);
+
+      setBudgetData(budgetProgress);
+    } catch (error) {
+      console.error('Error loading budget data:', error);
+    }
+  };
+
+  useEffect(() => {
+    if (user && categories.length > 0 && transactions.length > 0) {
+      loadBudgetData();
+    }
+  }, [user, categories, transactions]);
 
   if (loading) {
     return (
@@ -186,13 +222,21 @@ const Index = () => {
     <div className="p-4 lg:p-6 space-y-6">
       <div className="flex items-center justify-between mb-6">
         <div className="flex-1" />
-        <Button 
-          onClick={() => setIsAddDialogOpen(true)}
-          className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
-        >
-          <Plus className="mr-2 h-4 w-4" />
-          Add Transaction
-        </Button>
+        <div className="flex gap-2">
+          <Button 
+            variant="outline"
+            onClick={() => setIsBudgetDialogOpen(true)}
+          >
+            🎯 Set Budget Goals
+          </Button>
+          <Button 
+            onClick={() => setIsAddDialogOpen(true)}
+            className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+          >
+            <Plus className="mr-2 h-4 w-4" />
+            Add Transaction
+          </Button>
+        </div>
       </div>
 
       <DashboardHeader 
@@ -223,6 +267,20 @@ const Index = () => {
         isOpen={isAddDialogOpen}
         onClose={() => setIsAddDialogOpen(false)}
         onSuccess={handleTransactionAdded}
+        categories={categories}
+      />
+
+      <BudgetDialog
+        isOpen={isBudgetDialogOpen}
+        onClose={() => setIsBudgetDialogOpen(false)}
+        onSuccess={() => {
+          setIsBudgetDialogOpen(false);
+          loadBudgetData();
+          toast({
+            title: "Success",
+            description: "Budget goals updated successfully!",
+          });
+        }}
         categories={categories}
       />
     </div>
