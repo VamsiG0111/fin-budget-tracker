@@ -1,0 +1,1 @@
+// File content removed as FinancesPage is now in pages/

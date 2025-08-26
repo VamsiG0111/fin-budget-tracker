@@ -33,7 +33,7 @@ export type Database = {
           month: number
           updated_at?: string
           user_id: string
-          year: number
+          year?: number
         }
         Update: {
           amount?: number
@@ -55,6 +55,39 @@ export type Database = {
           },
         ]
       }
+      assets: {
+        Row: {
+          amount: number
+          category: string
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount?: number
+          category: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          category?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       categories: {
         Row: {
           color: string
@@ -71,7 +104,7 @@ export type Database = {
           icon?: string
           id?: string
           is_custom?: boolean
-          name: string
+          name?: string
           user_id: string
         }
         Update: {
@@ -81,6 +114,45 @@ export type Database = {
           id?: string
           is_custom?: boolean
           name?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      liabilities: {
+        Row: {
+          amount: number
+          category: string
+          created_at: string
+          description: string | null
+          due_date: string | null
+          id: string
+          is_recurring: boolean | null
+          name: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount?: number
+          category: string
+          created_at?: string
+          description?: string | null
+          due_date?: string | null
+          id?: string
+          is_recurring?: boolean | null
+          name: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          category?: string
+          created_at?: string
+          description?: string | null
+          due_date?: string | null
+          id?: string
+          is_recurring?: boolean | null
+          name?: string
+          updated_at?: string
           user_id?: string
         }
         Relationships: []
@@ -123,9 +195,11 @@ export type Database = {
           amount: number
           category_id: string
           created_at: string
+          credit_card_id: string | null
           date: string
           description: string
           id: string
+          payment_source: string | null
           type: string
           updated_at: string
           user_id: string
@@ -134,9 +208,11 @@ export type Database = {
           amount: number
           category_id: string
           created_at?: string
+          credit_card_id?: string | null
           date?: string
           description: string
           id?: string
+          payment_source?: string | null
           type: string
           updated_at?: string
           user_id: string
@@ -145,9 +221,11 @@ export type Database = {
           amount?: number
           category_id?: string
           created_at?: string
+          credit_card_id?: string | null
           date?: string
           description?: string
           id?: string
+          payment_source?: string | null
           type?: string
           updated_at?: string
           user_id?: string
@@ -160,6 +238,13 @@ export type Database = {
             referencedRelation: "categories"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "transactions_credit_card_id_fkey"
+            columns: ["credit_card_id"]
+            isOneToOne: false
+            referencedRelation: "liabilities"
+            referencedColumns: ["id"]
+          }
         ]
       }
     }

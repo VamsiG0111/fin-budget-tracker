@@ -2,12 +2,16 @@ import { useState, useEffect } from 'react';
 import { SpendingTrends } from '@/components/analytics/SpendingTrends';
 import { CategoryBreakdown } from '@/components/analytics/CategoryBreakdown';
 import { InsightsCards } from '@/components/analytics/InsightsCards';
+import { SmartInsights } from '@/components/analytics/SmartInsights';
 import { ExpenseChart } from '@/components/dashboard/ExpenseChart';
-import { BudgetProgress } from '@/components/dashboard/BudgetProgress';
 import { useAuth } from '@/hooks/use-auth';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Button } from '@/components/ui/button';
+import { Calendar, TrendingUp } from 'lucide-react';
+import { useMonth } from '@/contexts/MonthContext';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 interface Transaction {
   id: string;
@@ -33,35 +37,77 @@ interface Category {
 export default function Analytics() {
   const { user } = useAuth();
   const { toast } = useToast();
+  const { selectedMonth, selectedYear, monthName } = useMonth();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
+  const [viewMode, setViewMode] = useState<'monthly' | 'annual'>('monthly');
 
   useEffect(() => {
     if (user) {
       loadData();
     }
-  }, [user]);
+  }, [user, selectedMonth, selectedYear, viewMode]);
 
   const loadData = async () => {
     try {
       setLoading(true);
       
-      // Load transactions with categories
-      const { data: transactionData, error: transactionError } = await supabase
-        .from('transactions')
-        .select(`
-          *,
-          categories (
-            id,
-            name,
-            icon,
-            color
-          )
-        `)
-        .eq('user_id', user?.id)
-        .order('date', { ascending: false })
-        .limit(1000); // Get more data for analytics
+      let transactionData;
+      let transactionError;
+
+      if (viewMode === 'monthly') {
+        // Calculate date range for selected month
+        const startDate = `${selectedYear}-${selectedMonth.toString().padStart(2, '0')}-01`;
+        const nextMonth = selectedMonth === 12 ? 1 : selectedMonth + 1;
+        const nextYear = selectedMonth === 12 ? selectedYear + 1 : selectedYear;
+        const endDate = `${nextYear}-${nextMonth.toString().padStart(2, '0')}-01`;
+        
+        // Load transactions for SELECTED MONTH only
+        const result = await supabase
+          .from('transactions')
+          .select(`
+            *,
+            categories (
+              id,
+              name,
+              icon,
+              color
+            )
+          `)
+          .eq('user_id', user?.id)
+          .gte('date', startDate)
+          .lt('date', endDate)
+          .order('date', { ascending: false })
+          .limit(1000);
+        
+        transactionData = result.data;
+        transactionError = result.error;
+      } else {
+        // Load all transactions for the selected year (annual view)
+        const startDate = `${selectedYear}-01-01`;
+        const endDate = `${selectedYear + 1}-01-01`;
+        
+        const result = await supabase
+          .from('transactions')
+          .select(`
+            *,
+            categories (
+              id,
+              name,
+              icon,
+              color
+            )
+          `)
+          .eq('user_id', user?.id)
+          .gte('date', startDate)
+          .lt('date', endDate)
+          .order('date', { ascending: false })
+          .limit(10000);
+        
+        transactionData = result.data;
+        transactionError = result.error;
+      }
 
       if (transactionError) throw transactionError;
 
@@ -107,32 +153,54 @@ export default function Analytics() {
   const savings = totalIncome - totalExpenses;
   const savingsRate = totalIncome > 0 ? (savings / totalIncome) * 100 : 0;
 
-  // Monthly trends data
+  // Updated monthly trends data based on view mode
   const monthlyData = [];
   const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-  const currentYear = new Date().getFullYear();
 
-  months.forEach((month, index) => {
-    const monthTransactions = transactions.filter(t => {
-      const transactionDate = new Date(t.date);
-      return transactionDate.getFullYear() === currentYear && transactionDate.getMonth() === index;
+  if (viewMode === 'annual') {
+    // For annual view, show all 12 months of the selected year
+    months.forEach((month, index) => {
+      const monthTransactions = transactions.filter(t => {
+        const transactionDate = new Date(t.date);
+        return transactionDate.getFullYear() === selectedYear && transactionDate.getMonth() === index;
+      });
+
+      const monthIncome = monthTransactions
+        .filter(t => t.type === 'income')
+        .reduce((sum, t) => sum + Number(t.amount), 0);
+
+      const monthExpenses = monthTransactions
+        .filter(t => t.type === 'expense')
+        .reduce((sum, t) => sum + Number(t.amount), 0);
+
+      monthlyData.push({
+        month,
+        income: monthIncome,
+        expenses: monthExpenses,
+        savings: monthIncome - monthExpenses,
+      });
     });
-
-    const monthIncome = monthTransactions
-      .filter(t => t.type === 'income')
-      .reduce((sum, t) => sum + Number(t.amount), 0);
-
-    const monthExpenses = monthTransactions
-      .filter(t => t.type === 'expense')
-      .reduce((sum, t) => sum + Number(t.amount), 0);
-
-    monthlyData.push({
-      month,
-      income: monthIncome,
-      expenses: monthExpenses,
-      savings: monthIncome - monthExpenses,
-    });
-  });
+  } else {
+    // For monthly view, show context around selected month
+    for (let i = 5; i >= 0; i--) {
+      let month = selectedMonth - i;
+      let year = selectedYear;
+      
+      if (month <= 0) {
+        month += 12;
+        year -= 1;
+      }
+      
+      const isSelected = month === selectedMonth && year === selectedYear;
+      
+      monthlyData.push({
+        month: months[month - 1],
+        income: isSelected ? totalIncome : 0,
+        expenses: isSelected ? totalExpenses : 0,
+        savings: isSelected ? savings : 0,
+      });
+    }
+  }
 
   // Category breakdown data
   const expensesByCategory = categories.map(category => {
@@ -179,8 +247,8 @@ export default function Analytics() {
     if (!user) return;
 
     try {
-      const currentMonth = new Date().getMonth() + 1;
-      const currentYear = new Date().getFullYear();
+      const currentMonth = selectedMonth;
+      const currentYear = selectedYear;
 
       const { data: budgets, error } = await supabase
         .from('budgets')
@@ -236,6 +304,22 @@ export default function Analytics() {
     budgetUtilization,
   };
 
+  const getAnalysisTitle = () => {
+    if (viewMode === 'monthly') {
+      return `Analytics for ${monthName} ${selectedYear}`;
+    } else {
+      return `Annual Analytics for ${selectedYear}`;
+    }
+  };
+
+  const getAnalysisDescription = () => {
+    if (viewMode === 'monthly') {
+      return `Comprehensive insights for ${monthName} ${selectedYear}`;
+    } else {
+      return `Year-to-date cumulative analysis for ${selectedYear}`;
+    }
+  };
+
   if (loading) {
     return (
       <div className="p-4 lg:p-6 space-y-6">
@@ -257,39 +341,78 @@ export default function Analytics() {
   }
 
   return (
-    <div className="p-4 lg:p-6 space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold gradient-text-primary">Analytics Dashboard</h1>
-        <p className="text-muted-foreground mt-2">
-          Comprehensive insights into your financial data and spending patterns
-        </p>
+    <div className="p-4 lg:p-6 space-y-4">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl lg:text-3xl font-bold gradient-text-primary">{getAnalysisTitle()}</h1>
+          <p className="text-muted-foreground mt-1 text-sm">
+            {getAnalysisDescription()}
+          </p>
+        </div>
+        <Button
+          variant={viewMode === 'annual' ? 'default' : 'outline'}
+          onClick={() => setViewMode(viewMode === 'monthly' ? 'annual' : 'monthly')}
+          className="gap-2"
+        >
+          {viewMode === 'monthly' ? (
+            <>
+              <TrendingUp className="w-4 h-4" />
+              View Annual Analysis
+            </>
+          ) : (
+            <>
+              <Calendar className="w-4 h-4" />
+              View Monthly Analysis
+            </>
+          )}
+        </Button>
       </div>
 
-      <InsightsCards data={insightsData} />
+      <Tabs defaultValue="overview" className="space-y-6">
+        <TabsList className="grid w-full grid-cols-3">
+          <TabsTrigger value="overview">Overview</TabsTrigger>
+          <TabsTrigger value="insights">Smart Insights</TabsTrigger>
+          <TabsTrigger value="detailed">Detailed Analysis</TabsTrigger>
+        </TabsList>
 
-      <div className="grid gap-6 lg:grid-cols-2">
-        <SpendingTrends data={monthlyData} />
-        <ExpenseChart data={expensePieData} />
-      </div>
+        <TabsContent value="overview" className="space-y-4">
+          <InsightsCards data={insightsData} />
 
-      <div className="grid gap-6 lg:grid-cols-2">
-        <CategoryBreakdown 
-          data={expensesByCategory}
-          title="Expense Breakdown"
-          description="Spending by category this year"
-        />
-        {incomeByCategory.length > 0 && (
-          <CategoryBreakdown 
-            data={incomeByCategory}
-            title="Income Sources"
-            description="Income by category this year"
+          <div className="grid gap-4 lg:grid-cols-2">
+            <SpendingTrends data={monthlyData} />
+            <ExpenseChart data={expensePieData} />
+          </div>
+        </TabsContent>
+
+        <TabsContent value="insights" className="space-y-4">
+          <SmartInsights 
+            data={insightsData}
+            categories={expensesByCategory}
+            trends={{
+              incomeGrowth: 0, // You can calculate this based on historical data
+              expenseGrowth: 0, // You can calculate this based on historical data
+              consistentCategories: expensesByCategory.slice(0, 3).map(cat => cat.name)
+            }}
           />
-        )}
-      </div>
+        </TabsContent>
 
-      {budgetData.length > 0 && (
-        <BudgetProgress categories={budgetData} />
-      )}
+        <TabsContent value="detailed" className="space-y-4">
+          <div className="grid gap-4 lg:grid-cols-2">
+            <CategoryBreakdown 
+              data={expensesByCategory}
+              title="Detailed Expense Analysis"
+              description={viewMode === 'monthly' ? `Spending breakdown for ${monthName}` : `Annual spending breakdown for ${selectedYear}`}
+            />
+            {incomeByCategory.length > 0 && (
+              <CategoryBreakdown 
+                data={incomeByCategory}
+                title="Income Sources Analysis"
+                description={viewMode === 'monthly' ? `Income breakdown for ${monthName}` : `Annual income breakdown for ${selectedYear}`}
+              />
+            )}
+          </div>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

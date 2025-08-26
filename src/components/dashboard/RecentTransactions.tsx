@@ -7,7 +7,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { TransactionDialog } from '@/components/transactions/TransactionDialog';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { format } from 'date-fns';
+import { format, formatDate } from 'date-fns';
 
 interface Category {
   id: string;
@@ -17,6 +17,7 @@ interface Category {
 }
 
 interface Transaction {
+  [x: string]: any;
   id: string;
   type: 'income' | 'expense';
   amount: number;
@@ -86,139 +87,112 @@ export function RecentTransactions({ transactions, categories, onRefresh }: Rece
   };
 
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-IN', {
+    return new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: 'INR',
+      currency: 'USD',
     }).format(amount);
+  };
+
+  const getCategoryColor = (categoryId: string) => {
+    const category = categories.find(c => c.id === categoryId);
+    return category?.color || '#6b7280';
+  };
+
+  const getCategoryName = (categoryId: string) => {
+    const category = categories.find(c => c.id === categoryId);
+    return category?.name || 'Unknown';
+  };
+
+  const getCategoryIcon = (categoryId: string) => {
+    const category = categories.find(c => c.id === categoryId);
+    return category?.icon || '🏷️';
   };
 
   return (
     <>
-      <Card className="h-fit">
+      <Card className="shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02]">
         <CardHeader className="pb-4">
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle className="text-lg">Recent Transactions</CardTitle>
-              <CardDescription>
-                Your latest financial activities
+              <CardTitle className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                Recent Transactions
+              </CardTitle>
+              <CardDescription className="text-muted-foreground">
+                Your latest financial activity
               </CardDescription>
             </div>
             <Button
-              variant="outline"
-              size="icon"
+              variant="ghost"
+              size="sm"
               onClick={onRefresh}
-              className="hover:bg-primary/5 hover:border-primary/20"
+              className="h-8 w-8 p-0 hover:bg-primary/10 hover:scale-110 transition-all duration-200"
             >
               <RefreshCw className="h-4 w-4" />
             </Button>
           </div>
         </CardHeader>
-        <CardContent className="space-y-3">
+        <CardContent className="p-4 lg:p-6">
           {transactions.length === 0 ? (
-            <div className="text-center py-8">
-              <DollarSign className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-              <p className="text-muted-foreground mb-2">No transactions yet</p>
-              <p className="text-sm text-muted-foreground">
-                Start by adding your first transaction
-              </p>
+            <div className="text-center py-8 text-muted-foreground">
+              <span className="text-4xl mb-2 block animate-bounce">📝</span>
+              <p className="font-medium">No transactions yet</p>
+              <p className="text-sm">Start adding transactions to see them here</p>
             </div>
           ) : (
-            transactions.map((transaction) => (
-              <div
-                key={transaction.id}
-                className="flex items-center gap-3 p-3 rounded-lg border bg-card/50 hover:bg-card transition-colors group"
-              >
-                <div className="flex-shrink-0">
-                  <div 
-                    className="w-10 h-10 rounded-full flex items-center justify-center text-sm font-medium"
-                    style={{ 
-                      backgroundColor: transaction.category.color + '20',
-                      color: transaction.category.color 
-                    }}
-                  >
-                    {transaction.category.icon}
-                  </div>
-                </div>
-                
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-1">
-                    <p className="font-medium text-sm truncate">
-                      {transaction.description}
-                    </p>
-                    {transaction.type === 'income' ? (
-                      <TrendingUp className="h-3 w-3 text-success flex-shrink-0" />
-                    ) : (
-                      <TrendingDown className="h-3 w-3 text-danger flex-shrink-0" />
-                    )}
-                  </div>
-                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                    <span>{transaction.category.name}</span>
-                    <span>•</span>
-                    <div className="flex items-center gap-1">
-                      <Calendar className="h-3 w-3" />
-                      {format(new Date(transaction.date), 'MMM dd')}
+            <div className="space-y-3">
+              {transactions.map((transaction, index) => (
+                <div 
+                  key={transaction.id}
+                  className="group p-3 rounded-lg border border-border/50 hover:border-border transition-all duration-300 hover:shadow-md bg-gradient-to-r from-background to-muted/10 hover:from-muted/20 hover:to-muted/30"
+                  style={{ 
+                    animation: `slideIn 0.6s ease-out both ${index * 100}ms` 
+                  }}
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div 
+                        className="w-10 h-10 rounded-full flex items-center justify-center group-hover:bg-primary/20 transition-colors duration-300 group-hover:scale-110 transform"
+                        style={{ backgroundColor: `${getCategoryColor(transaction.category?.id || '')}20` }}
+                      >
+                        <span className="text-lg">{transaction.category?.icon ?? '🏷️'}</span>
+                      </div>
+                      <div>
+                        <p className="font-medium text-foreground group-hover:text-primary transition-colors duration-300">
+                          {transaction.description}
+                        </p>
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                          <span>{transaction.category?.name || 'Unknown'}</span>
+                          <span>•</span>
+                          <span>{format(new Date(transaction.date), 'MMM dd')}</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className={`font-semibold transition-all duration-300 group-hover:scale-105 transform ${
+                        transaction.type === 'income' ? 'text-green-600' : 'text-red-600'
+                      }`}>
+                        {transaction.type === 'income' ? '+' : '-'}{formatCurrency(transaction.amount)}
+                      </p>
                     </div>
                   </div>
                 </div>
-                
-                <div className="flex items-center gap-2">
-                  <div className="text-right">
-                    <p className={`font-semibold text-sm ${
-                      transaction.type === 'income' ? 'text-success' : 'text-foreground'
-                    }`}>
-                      {transaction.type === 'income' ? '+' : '-'}{formatCurrency(transaction.amount)}
-                    </p>
-                  </div>
-                  
-                  <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-7 w-7 hover:bg-primary/10 hover:text-primary"
-                      onClick={() => handleEdit(transaction)}
-                    >
-                      <Edit2 className="h-3 w-3" />
-                    </Button>
-                    
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-7 w-7 hover:bg-destructive/10 hover:text-destructive"
-                          disabled={deletingId === transaction.id}
-                        >
-                          {deletingId === transaction.id ? (
-                            <div className="animate-spin rounded-full h-3 w-3 border-b border-current"></div>
-                          ) : (
-                            <Trash2 className="h-3 w-3" />
-                          )}
-                        </Button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>Delete Transaction</AlertDialogTitle>
-                          <AlertDialogDescription>
-                            Are you sure you want to delete this transaction? This action cannot be undone.
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>Cancel</AlertDialogCancel>
-                          <AlertDialogAction
-                            onClick={() => handleDelete(transaction.id)}
-                            className="bg-destructive hover:bg-destructive/90"
-                          >
-                            Delete
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
-                  </div>
-                </div>
-              </div>
-            ))
+              ))}
+            </div>
           )}
         </CardContent>
+        
+        <style>{`
+          @keyframes slideIn {
+            from { 
+              opacity: 0; 
+              transform: translateX(-20px); 
+            }
+            to { 
+              opacity: 1; 
+              transform: translateX(0); 
+            }
+          }
+        `}</style>
       </Card>
 
       {editingTransaction && (

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { CalendarDays, DollarSign } from 'lucide-react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -53,65 +53,112 @@ export function TransactionDialog({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!formData.amount || !formData.description || !formData.categoryId) {
+    if (!user) return;
+
+    // Validate required fields
+    if (!formData.categoryId) {
       toast({
-        title: "Validation Error",
-        description: "Please fill in all required fields.",
+        title: "Error",
+        description: "Please select a category.",
         variant: "destructive",
       });
       return;
     }
 
-    setLoading(true);
-    try {
-      const transactionData = {
-        type: formData.type,
-        amount: parseFloat(formData.amount),
-        description: formData.description,
-        category_id: formData.categoryId,
-        date: formData.date,
-        user_id: user?.id,
-      };
-
-      if (transaction) {
-        // Update existing transaction
-        const { error } = await supabase
-          .from('transactions')
-          .update(transactionData)
-          .eq('id', transaction.id);
-
-        if (error) throw error;
-      } else {
-        // Create new transaction
-        const { error } = await supabase
-          .from('transactions')
-          .insert([transactionData]);
-
-        if (error) throw error;
-      }
-
-      onSuccess();
-      
-      // Reset form
-      setFormData({
-        type: 'expense',
-        amount: '',
-        description: '',
-        categoryId: '',
-        date: new Date().toISOString().split('T')[0],
-      });
-      
-    } catch (error) {
-      console.error('Error saving transaction:', error);
+    if (!formData.amount || parseFloat(formData.amount) <= 0) {
       toast({
         title: "Error",
-        description: "Failed to save transaction. Please try again.",
+        description: "Please enter a valid amount.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!formData.description.trim()) {
+      toast({
+        title: "Error",
+        description: "Please enter a description.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      // Add transaction with basic fields only (remove payment_source and credit_card_id)
+      const transactionData = {
+        user_id: user.id,
+        type: formData.type,
+        amount: parseFloat(formData.amount),
+        description: formData.description.trim(),
+        category_id: formData.categoryId,
+        date: formData.date
+      };
+
+      console.log('Saving transaction:', transactionData); // Debug log
+
+      const { error: transactionError } = await supabase
+        .from('transactions')
+        .insert(transactionData);
+
+      if (transactionError) {
+        console.error('Transaction error:', transactionError);
+        throw transactionError;
+      }
+
+      // Auto-add investment transactions to assets
+      if (formData.type === 'expense') {
+        const category = categories.find(c => c.id === formData.categoryId);
+        if (category?.name.toLowerCase().includes('investment')) {
+          try {
+            const { error: assetError } = await supabase
+              .from('assets')
+              .insert({
+                user_id: user.id,
+                name: `Investment - ${formData.description}`,
+                category: 'investment',
+                amount: parseFloat(formData.amount),
+                description: `Auto-added from transaction: ${formData.description}`
+              });
+
+            if (assetError) {
+              console.error('Error adding asset:', assetError);
+            }
+          } catch (assetError) {
+            console.error('Asset creation failed:', assetError);
+            // Don't fail the transaction if asset creation fails
+          }
+        }
+      }
+
+      toast({
+        title: "Success",
+        description: "Transaction added successfully!",
+      });
+
+      resetForm();
+      onSuccess();
+    } catch (error) {
+      console.error('Error adding transaction:', error);
+      toast({
+        title: "Error",
+        description: `Failed to add transaction: ${error?.message || 'Unknown error'}`,
         variant: "destructive",
       });
     } finally {
       setLoading(false);
     }
+  };
+
+  const resetForm = () => {
+    setFormData({
+      type: 'expense',
+      amount: '',
+      description: '',
+      categoryId: '',
+      date: new Date().toISOString().split('T')[0],
+    });
   };
 
   const selectedCategory = categories.find(c => c.id === formData.categoryId);
